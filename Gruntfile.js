@@ -30,6 +30,12 @@ module.exports = function(grunt) {
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
+    jasmine : {
+      src : 'src/**/*.js',
+      options : {
+        specs : 'spec/**/*.js'
+      }
+    },
     jshint: {
       options: {
         curly: true,

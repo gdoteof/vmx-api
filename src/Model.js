@@ -1,6 +1,6 @@
-'use strict';
 
 function Model() {
+  'use strict';
   return this;
 }
 

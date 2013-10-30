@@ -31,7 +31,7 @@ module.exports = function(grunt) {
       }
     },
     jasmine : {
-      src : 'src/**/*.js',
+      src : ['src/**/*.js','lib/<%= pkg.name %>.js'],
       options : {
         specs : 'spec/**/*.js',
       }
@@ -50,14 +50,16 @@ module.exports = function(grunt) {
         boss: true,
         eqnull: true,
         globals: {
-          jQuery: true
+          jQuery: true,
+          window: true,
+          console: true,
         }
       },
       gruntfile: {
         src: 'Gruntfile.js'
       },
       lib_test: {
-        src: ['lib/**/*.js', 'test/**/*.js']
+        src: ['lib/**/*.js', 'test/**/*.js', 'src/**/*.js']
       }
     },
     watch: {

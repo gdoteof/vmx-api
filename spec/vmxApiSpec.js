@@ -8,7 +8,7 @@ describe("vmxApi", function() {
   var hand_dets,face_dets;
   beforeEach(function() {
     api = new vmxApi();
-    hand_dets = 
+    hand_dets = [
       {
         bb: {
           0: 391.48,
@@ -20,7 +20,8 @@ describe("vmxApi", function() {
         image: "data:image/jpeg;base64,/9j/4AAQSk",
         score: -0.994451,
       }
-    face_dets = 
+    ];
+    face_dets = [
       {
         bb: {
           0: 391.48,
@@ -32,6 +33,7 @@ describe("vmxApi", function() {
         image: "data:image/jpeg;base64,/9j/4AAQSk",
         score: -0.994451,
       }
+    ];
   });
 
 
@@ -39,8 +41,12 @@ describe("vmxApi", function() {
     expect(3).toEqual(3);
   });
 
-  it("should process detections form the server", function(){
-    expect(api.processServerResponse(face_dets)).toBeTruthy();
+  it("should accept detections form the server", function(){
+    var params ={
+      detections: face_dets,
+      connectionId: 'foo',
+    }
+    expect(api.processServerResponse(params)).toBeTruthy();
   });
 
 

@@ -33,7 +33,7 @@ module.exports = function(grunt) {
     jasmine : {
       src : 'src/**/*.js',
       options : {
-        specs : 'spec/**/*.js'
+        specs : 'spec/**/*.js',
       }
     },
     jshint: {
@@ -69,7 +69,17 @@ module.exports = function(grunt) {
         files: '<%= jshint.lib_test.src %>',
         tasks: ['jshint:lib_test', 'nodeunit']
       }
-    }
+    },
+    strip_code: {
+      options: {
+        start_comment : "start-test-code",
+        end_comment   : "end-test-code",
+      },
+      your_target: {
+        // a list of files you want to strip code from
+        src: "src/**/*.js"
+      }
+    },
   });
 
   // These plugins provide necessary tasks.
@@ -78,8 +88,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
+  grunt.loadNpmTasks('grunt-strip-code');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'uglify','strip_code']);
 
 };

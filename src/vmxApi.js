@@ -3,14 +3,34 @@ var vmxApi;
 "use strict";
 var inited = false;
 var _vmxApi;
-/*Constructor*/
 
 function VmxApi(){
-   /**`detectors` is a hashed array, keyed by model name; 
-    *  Each element is itself a hashed array of detectors, keyed by connectionId
-    */
-
+   //`detectors` is a hashed array, keyed by model name; 
+   //  Each element is itself a hashed array of detectors, keyed by connectionId
    var detectors = {};
+
+   //`callbacks` is a hashed array, keyed by model name,
+   // each element is a an array of callbacks, keyed by callback type
+   // ex:
+   //    * callbacks
+   //         0. face
+   //             onEnter : function(){ console.log("entered face"); },
+   //             onExit : function(){ console.log("face left"); },
+   //         1. hand
+   //             onEnter : function(){ console.log("entered hand"); },
+   //             onExit : function(){ console.log("no more hand"); },
+   var callbacks = {};
+
+   var fireEnteredCallback = function(model_name){
+      if( 
+          !callbacks[model_name] || 
+          !callbacks[model_name]['onEnter']) {
+        //Faily silently if nothing to do
+        return this;
+      }
+      callbacks[model_name]['onEnter']();
+      return this;
+   };
 
   return {
     reset: function() {
@@ -43,13 +63,19 @@ function VmxApi(){
         /** This is the first firing of ANY detector for this model_name */
         detectors[model_name] = {};
         detectors[model_name][connectionId] = detections;
+        fireEnteredCallback(model_name);
       }
       console.log("process_server_response called for", model_name);
       return this;
     },
     everDetected : function(){
       return this.$selected !== undefined;
+    },
+    // start-test-code
+    __test__ : {
+      fireEnteredCallback: fireEnteredCallback,
     }
+    // end-test-code
   };
 }
 
@@ -68,6 +94,9 @@ vmxApi();
 
 vmxApi.reset = _vmxApi.reset;
 vmxApi.processServerResponse = _vmxApi.processServerResponse;
+// start-test-code
+vmxApi.__test__ = _vmxApi.__test__;
+// end-test-code
 
 
 })();

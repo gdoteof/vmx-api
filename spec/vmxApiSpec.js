@@ -48,10 +48,6 @@ describe("vmxApi", function() {
   });
 
   it("should accept detections from the server", function(){
-    var face_params ={
-      detections: face_dets,
-      connectionId: 'foo',
-    }
     expect(vmxApi.processServerResponse(face_params)).toBeTruthy();
   });
 
@@ -60,20 +56,12 @@ describe("vmxApi", function() {
   });
 
   it("should find detections it has processed", function(){
-    var face_params ={
-      detections: face_dets,
-      connectionId: 'foo',
-    }
     vmxApi.processServerResponse(face_params);
     expect(vmxApi('face')).toBeTruthy();
   });
 
   it("it should be able to fully reset itself", function(){
-  //This test should probably be more robust
-    var face_params ={
-      detections: face_dets,
-      connectionId: 'foo',
-    }
+    //This test should probably be more robust
     vmxApi.processServerResponse(face_params);
     expect(vmxApi('face')).toBeTruthy();
     vmxApi.reset();
@@ -87,4 +75,10 @@ describe("vmxApi", function() {
     expect(vmxApi('face').everDetected()).toBe(true);
   });
 
+  it("it should successfully execute a callback upon detection", function(){
+    //We use the __test__ name space to test functions that aren't pubically accessible
+    spyOn(vmxApi.__test__,'fireEnteredCallback').andCallFake(function(e){
+      e.processServerResponse(face_params);
+    })
+  });
 });

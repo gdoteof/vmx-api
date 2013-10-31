@@ -5,11 +5,11 @@ var inited = false;
 var _vmxApi;
 
 function VmxApi(){
-   //`detectors` is a hashed array, keyed by model name; 
+   // `detectors` is a hashed array, keyed by model name; 
    //  Each element is itself a hashed array of detectors, keyed by connectionId
    var detectors = {};
 
-   //`callbacks` is a hashed array, keyed by model name,
+   // `callbacks` is a hashed array, keyed by model name,
    // each element is a an array of callbacks, keyed by callback type
    // ex:
    //    * callbacks

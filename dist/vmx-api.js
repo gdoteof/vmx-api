@@ -8,7 +8,10 @@ var _vmxApi;
 /*Constructor*/
 
 function VmxApi(){
-   //`detectors` is a hashed array, keyed by model name; Each element is itself a hashed array of detectors, keyed by connectionId
+   /**`detectors` is a hashed array, keyed by model name; 
+    *  Each element is itself a hashed array of detectors, keyed by connectionId
+    */
+
    var detectors = {};
 
   return {

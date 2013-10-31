@@ -2,12 +2,10 @@
 
 /*globals vmxApi:false*/
 
-
 describe("vmxApi", function() {
-  var api;
   var hand_dets,face_dets;
   beforeEach(function() {
-    api = new vmxApi();
+    vmxApi.reset();
     hand_dets = [
       {
         bb: {
@@ -41,14 +39,25 @@ describe("vmxApi", function() {
     expect(3).toEqual(3);
   });
 
-  it("should accept detections form the server", function(){
+  it("should accept detections from the server", function(){
     var params ={
       detections: face_dets,
       connectionId: 'foo',
     }
-    expect(api.processServerResponse(params)).toBeTruthy();
+    expect(vmxApi.processServerResponse(params)).toBeTruthy();
   });
 
+  it("should not find any detections if nothings been processed", function(){
+    expect(function(){vmxApi('hand')}).toThrow('No detector');
+  });
 
+  it("should find detections it has processed", function(){
+    var params ={
+      detections: face_dets,
+      connectionId: 'foo',
+    }
+    vmxApi.processServerResponse(params);
+    expect(vmxApi('face')).toBeTruthy();
+  });
 
 });

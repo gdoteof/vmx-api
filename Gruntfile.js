@@ -33,7 +33,8 @@ module.exports = function(grunt) {
     jasmine : {
       src : ['src/**/*.js','lib/<%= pkg.name %>.js'],
       options : {
-        specs : 'spec/**/*.js',
+        specs      : 'spec/**/*.js',
+        keepRunner : true,
       }
     },
     jshint: {

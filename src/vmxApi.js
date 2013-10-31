@@ -1,21 +1,31 @@
 var vmxApi;
 (function(window){
-"use strict";
-
+"usex strict";
 /*Constructor*/
 vmxApi = window.vmxApi = function(selector){
-  //A hashed array, keyed my model name
-  //Each element is itself an array of detectors
+   console.log("called vmxApi constructor with selector:",selector);
+   console.log("this is ", this);
   return new VmxApi(selector);
 };
 
+
 var  VmxApi = function(selector){
-   if (!this.detectors) { this.detectors = {}; }
-   return this.$selected = this.detectors[selector]; 
+  console.log("called VmxApi constructor with selector:",selector);
+  console.log("this is ", this);
+  //A hashed array, keyed my model name
+  //Each element is itself an array of detectors
+  if (!this.detectors) { this.detectors = {}; }
+  if(selector && !(this.$selected = this.detectors[selector])) {
+     throw "No detector";
+  }
+  return this;
 };
 
 vmxApi.fn = VmxApi.prototype = {
-
+  constructor: vmxApi,
+  reset: function() {
+    this.detectors = {};
+  },
   processServerResponse : function(params){
     var detections   = params.detections;
     var model_name   = params.name || detections[0].cls;
@@ -37,28 +47,20 @@ vmxApi.fn = VmxApi.prototype = {
       /* This is the first firing of ANY detector for this model_name */
       this.detectors[model_name] = {};
       this.detectors[model_name][connectionId] = detections;
-
     }
     console.log("process_server_response called for", model_name);
     return this;
   },
-
   everDetected : function(){
     return this.$selected !== undefined;
   }
-
 };
 
+/*for convenience, let the api look like an object for methods that don't need a selector */
+vmxApi.reset = vmxApi().reset;
+vmxApi.processServerResponse = vmxApi().processServerResponse;
 
-//  this.reset = function(){
-//    detectors = {}
-//  }
-
-//  return this;
-//}
-
-//VmxApi.prototype.dub = function(number) {
-//  process_server_response(null,"themodelname"); 
-//  return number * 2;
-//};
 })(window);
+
+console.log("about to call vmxApi in definition");
+vmxApi("muhSelector");

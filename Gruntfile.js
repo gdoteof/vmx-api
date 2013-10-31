@@ -88,9 +88,14 @@ module.exports = function(grunt) {
       javascript:["src/**/*.js"],
       src:["src/**/*.js"],
         options: {
-          out: "doc/",
+          out: 'docs',
+        },
+      },
+      pub : {
+      javascript:["src/**/*.js"],
+      src:["src/**/*.js"],
+        options: {
           github: true,
-
         },
       },
     }
@@ -107,6 +112,6 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'uglify','strip_code']);
-  grunt.registerTask('docs', ['groc:docs']);
+  grunt.registerTask('docs', ['groc:docs','groc:pub']);
 
 };

@@ -59,5 +59,4 @@ describe("vmxApi", function() {
     vmxApi.processServerResponse(params);
     expect(vmxApi('face')).toBeTruthy();
   });
-
 });

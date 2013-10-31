@@ -4,7 +4,9 @@
 
 describe("vmxApi", function() {
   var hand_dets,face_dets;
+  var face_params;
   beforeEach(function() {
+    //Before eachtest, we set up some useful face_params.
     vmxApi.reset();
     hand_dets = [
       {
@@ -19,6 +21,7 @@ describe("vmxApi", function() {
         score: -0.994451,
       }
     ];
+
     face_dets = [
       {
         bb: {
@@ -32,6 +35,11 @@ describe("vmxApi", function() {
         score: -0.994451,
       }
     ];
+
+    face_params ={
+      detections: face_dets,
+      connectionId: 'foo',
+    }
   });
 
 
@@ -40,11 +48,11 @@ describe("vmxApi", function() {
   });
 
   it("should accept detections from the server", function(){
-    var params ={
+    var face_params ={
       detections: face_dets,
       connectionId: 'foo',
     }
-    expect(vmxApi.processServerResponse(params)).toBeTruthy();
+    expect(vmxApi.processServerResponse(face_params)).toBeTruthy();
   });
 
   it("should not find any detections if nothing's been processed", function(){
@@ -52,11 +60,31 @@ describe("vmxApi", function() {
   });
 
   it("should find detections it has processed", function(){
-    var params ={
+    var face_params ={
       detections: face_dets,
       connectionId: 'foo',
     }
-    vmxApi.processServerResponse(params);
+    vmxApi.processServerResponse(face_params);
     expect(vmxApi('face')).toBeTruthy();
   });
+
+  it("it should be able to fully reset itself", function(){
+  //This test should probably be more robust
+    var face_params ={
+      detections: face_dets,
+      connectionId: 'foo',
+    }
+    vmxApi.processServerResponse(face_params);
+    expect(vmxApi('face')).toBeTruthy();
+    vmxApi.reset();
+    expect(function(){vmxApi('hand')}).toThrow('No detector');
+    expect(function(){vmxApi('face')}).toThrow('No detector');
+  });
+
+  it("it should know if it's ever seen a model", function(){
+    vmxApi.processServerResponse(face_params);
+    expect(vmxApi('face')).toBeTruthy();
+    expect(vmxApi('face').everDetected()).toBe(true);
+  });
+
 });

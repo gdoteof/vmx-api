@@ -5,13 +5,10 @@ var inited = false;
 var _vmxApi;
 /*Constructor*/
 
-function VmxApi(selector){
-   console.log("called vmxApi constructor with selector:",selector);
-   console.log("this is ", this);
-   var detectors = {poop:"poopy thing"};
+function VmxApi(){
+   //`detectors` is a hashed array, keyed by model name; Each element is itself a hashed array of detectors, keyed by connectionId
+   var detectors = {};
 
-  //A hashed array, keyed my model name
-  //Each element is itself an array of detectors
   return {
     reset: function() {
       detectors = {};
@@ -29,18 +26,18 @@ function VmxApi(selector){
       var _detector;
       var _like_detectors;
       if(_like_detectors = detectors[model_name]){
-        /* There are already detectors for this model running */
+        /** There are already detectors for this model running */
         if (_detector = _like_detectors[connectionId]){
-          /* This model is already running, and we should do something */
+          /** This model is already running, and we should do something */
           //what do when it already exists?
           return this;
         } else {
-          /* This is the first time a detector has fired for this model */
+          /** This is the first time a detector has fired for this model */
           _detector = detectors[model_name][connectionId] = detections;
           return this;
         }
       } else {
-        /* This is the first firing of ANY detector for this model_name */
+        /** This is the first firing of ANY detector for this model_name */
         detectors[model_name] = {};
         detectors[model_name][connectionId] = detections;
       }

@@ -17,7 +17,7 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['lib/<%= pkg.name %>.js'],
+        src: ['src/**/*.js'],
         dest: 'dist/<%= pkg.name %>.js'
       }
     },
@@ -83,6 +83,13 @@ module.exports = function(grunt) {
         src: "src/**/*.js"
       }
     },
+    groc: {
+      javascript:["src/**/*.js"],
+      options: {
+        "out": "doc/",
+        "github": true,
+      }
+    }
   });
 
   // These plugins provide necessary tasks.
@@ -92,8 +99,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-strip-code');
+  grunt.loadNpmTasks('grunt-groc');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'uglify','strip_code']);
+  grunt.registerTask('docs', ['groc']);
 
 };

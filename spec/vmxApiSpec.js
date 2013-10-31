@@ -47,7 +47,7 @@ describe("vmxApi", function() {
     expect(vmxApi.processServerResponse(params)).toBeTruthy();
   });
 
-  it("should not find any detections if nothings been processed", function(){
+  it("should not find any detections if nothing's been processed", function(){
     expect(function(){vmxApi('hand')}).toThrow('No detector');
   });
 

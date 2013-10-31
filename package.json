@@ -20,6 +20,7 @@
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-jasmine": "~0.5.2",
     "yuidocjs": "~0.3.46",
-    "grunt-strip-code": "~0.1.2"
+    "grunt-strip-code": "~0.1.2",
+    "grunt-groc": "~0.4.0"
   }
 }

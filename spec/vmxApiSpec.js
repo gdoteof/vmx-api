@@ -81,7 +81,7 @@ describe("vmxApi", function() {
     expect(vmxApi('face').__test__.fireEnteredCallback).toHaveBeenCalled();
   });
 
-  it("should successfully fire a callback registerd as an onEnter function", function(){
+  it("NOTE: TEST NOTE COMPLETE -- should successfully fire a callback registerd as an onEnter function", function(){
     vmxApi('hand').onEnter(function(){console.log("hand entered");});
   });
 });

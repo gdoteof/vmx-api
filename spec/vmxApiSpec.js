@@ -3,7 +3,7 @@
 describe("vmxApi", function() {
   'use strict';
   var hand_dets,face_dets;
-  var face_params;
+  var face_params,hand_params;
   beforeEach(function() {
     //Before eachtest, we set up some useful face_params.
     vmxApi.reset();
@@ -39,6 +39,11 @@ describe("vmxApi", function() {
       detections: face_dets,
       connectionId: 'foo',
     };
+    
+    hand_params ={
+      detections: hand_dets,
+      connectionId: 'bar',
+    };
   });
 
 
@@ -48,6 +53,11 @@ describe("vmxApi", function() {
 
   it("should accept detections from the server", function(){
     expect(vmxApi.processServerResponse(face_params)).toBeTruthy();
+  });
+
+  it("should not allow any params to everDetected()", function(){
+    var err = {name:"Too many parameters", message: "This functin takes no params!"};
+    expect(function(){vmxApi('face').everDetected("anything");}).toThrow(err);
   });
 
   it("should not find any detections if nothing's been processed", function(){
@@ -81,14 +91,45 @@ describe("vmxApi", function() {
     expect(vmxApi('face').__test__.fireEnteredCallback).toHaveBeenCalled();
   });
 
-  it("should successfully fire a callback registerd as an onEnter function", function(){
-    var obj = {};
-    obj.callback = function(){};
-    obj.callback_sanity_checker = function(){};
-    spyOn(obj,'callback');
-    spyOn(obj,'callback_sanity_checker');
-    vmxApi('hand').onEnter(obj.callback);
-    expect(obj.callback).toHaveBeenCalled();
-    expect(obj.callback_sanity_checker).not.toHaveBeenCalled();
+  it("should successfully fire a callback registerd as an onEnter function when something enters", function(){
+    var toBeSpied = {
+      callback                : function(){},
+      callback_sanity_checker : function(){},
+    };
+    
+    spyOn(toBeSpied,'callback');
+    spyOn(toBeSpied,'callback_sanity_checker');
+
+    vmxApi('hand').onEnter(toBeSpied.callback);
+
+    vmxApi.processServerResponse(hand_params);
+
+    expect(toBeSpied.callback)
+          .toHaveBeenCalled();
+
+    expect(toBeSpied.callback_sanity_checker)
+          .not.toHaveBeenCalled();
   });
+
+  it("should successfully fire a callback registered as an onLeave function when something leaves", function(){
+    var toBeSpied = {
+      callback                : function(){},
+      callback_sanity_checker : function(){},
+    };
+    
+    spyOn(toBeSpied,'callback');
+    spyOn(toBeSpied,'callback_sanity_checker');
+
+    vmxApi('hand').onLeave(toBeSpied.callback);
+
+    vmxApi.processServerResponse(hand_params);
+
+    expect(toBeSpied.callback)
+          .toHaveBeenCalled();
+
+    expect(toBeSpied.callback_sanity_checker)
+          .not.toHaveBeenCalled();
+  });
+
+
 });

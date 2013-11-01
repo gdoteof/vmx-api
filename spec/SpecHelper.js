@@ -6,5 +6,6 @@ beforeEach(function() {
       var api = this.actual;
       return  api.selected === {};
     }
+
   });
 });

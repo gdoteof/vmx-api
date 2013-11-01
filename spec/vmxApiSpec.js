@@ -81,7 +81,14 @@ describe("vmxApi", function() {
     expect(vmxApi('face').__test__.fireEnteredCallback).toHaveBeenCalled();
   });
 
-  it("NOTE: TEST NOTE COMPLETE -- should successfully fire a callback registerd as an onEnter function", function(){
-    vmxApi('hand').onEnter(function(){console.log("hand entered");});
+  it("should successfully fire a callback registerd as an onEnter function", function(){
+    var obj = {};
+    obj.callback = function(){};
+    obj.callback_sanity_checker = function(){};
+    spyOn(obj,'callback');
+    spyOn(obj,'callback_sanity_checker');
+    vmxApi('hand').onEnter(obj.callback);
+    expect(obj.callback).toHaveBeenCalled();
+    expect(obj.callback_sanity_checker).not.toHaveBeenCalled();
   });
 });

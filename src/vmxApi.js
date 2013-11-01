@@ -102,6 +102,9 @@ vmxApi = function(selector){
 };
 vmxApi();
 
+// Here we are attaching functions to the object that is vmxApi; which is also a function.
+// Javascript is insane, so we use it's insanity to have sexier Api calls..
+// ie, we can do vmxApi.reset() instead of having to do vmxApi().reset()
 vmxApi.reset = _vmxApi.reset;
 vmxApi.processServerResponse = _vmxApi.processServerResponse;
 /* start-test-code */

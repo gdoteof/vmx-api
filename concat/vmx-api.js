@@ -1,3 +1,5 @@
+/*! vmx-api - v0.0.0 - 2013-10-31
+* Copyright (c) 2013 ; Licensed  */
 var vmxApi;
 (function(){
 "use strict";
@@ -38,9 +40,8 @@ function VmxApi(){
       detectors = {};
     },
     select : function(selector){
-      this.selector = selector;
       if(selector && !(this.$selected = detectors[selector])) {
-        this.$selected = null;
+         throw {message: "No detector", name: "No detector"};
       }
       return this;
     },
@@ -51,41 +52,33 @@ function VmxApi(){
       var _detector;
       var _like_detectors;
       if(_like_detectors = detectors[model_name]){
-        // There are already detectors for this model running 
+        /** There are already detectors for this model running */
         if (_detector = _like_detectors[connectionId]){
-          // This model is already running, and we should do something 
-          // NOTE: what do when it already exists?
+          /** This model is already running, and we should do something */
+          //what do when it already exists?
           return this;
         } else {
-          // This is the first time a detector has fired for this model
+          /** This is the first time a detector has fired for this model */
           _detector = detectors[model_name][connectionId] = detections;
           return this;
         }
       } else {
-        // This is the first firing of ANY detector for this model_name 
+        /** This is the first firing of ANY detector for this model_name */
         detectors[model_name] = {};
         detectors[model_name][connectionId] = detections;
         fireEnteredCallback(model_name);
-        /* start-test-code */
-        this.__test__.fireEnteredCallback(model_name);
-        /* end-test-code */
       }
       console.log("process_server_response called for", model_name);
       return this;
     },
-    onEnter : function(callbackFunction){
-      if(!callbacks[this.selector]) { callbacks[this.selector] = {}; }
-      callbacks[this.selector]['onEnter'] = callbackFunction; 
-    },
     everDetected : function(){
-      // This weird check makes sure that $selected hasn't changed itself to something that is falsy but not 'null'
-      return (this.$selected !== null && !!(this.$selected));
+      return this.$selected !== undefined;
     },
-    /* start-test-code */
+    // start-test-code
     __test__ : {
       fireEnteredCallback: fireEnteredCallback,
     }
-    /* end-test-code */
+    // end-test-code
   };
 }
 
@@ -104,9 +97,9 @@ vmxApi();
 
 vmxApi.reset = _vmxApi.reset;
 vmxApi.processServerResponse = _vmxApi.processServerResponse;
-/* start-test-code */
+// start-test-code
 vmxApi.__test__ = _vmxApi.__test__;
-/* end-test-code */
+// end-test-code
 
 
 })();

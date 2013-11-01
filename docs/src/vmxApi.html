@@ -4,27 +4,23 @@
 <span class="kd">var</span> <span class="nx">inited</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">_vmxApi</span><span class="p">;</span>
 
-<span class="kd">function</span> <span class="nx">VmxApi</span><span class="p">(){</span>
-   <span class="c1">//`detectors` is a hashed array, keyed by model name; </span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Each element is itself a hashed array of detectors, keyed by connectionId</p></div></div><div class="code"><div class="wrapper">   <span class="kd">var</span> <span class="nx">detectors</span> <span class="o">=</span> <span class="p">{};</span>
-
-   <span class="c1">//`callbacks` is a hashed array, keyed by model name,</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>each element is a an array of callbacks, keyed by callback type
-ex:
-   * callbacks
-        0. face
-            onEnter : function(){ console.log("entered face"); },
-            onExit : function(){ console.log("face left"); },
-        1. hand
-            onEnter : function(){ console.log("entered hand"); },
-            onExit : function(){ console.log("no more hand"); },</p></div></div><div class="code"><div class="wrapper">   <span class="kd">var</span> <span class="nx">callbacks</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="kd">function</span> <span class="nx">VmxApi</span><span class="p">(){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><code>detectors</code> is a hashed array, keyed by model name; 
+ Each element is itself a hashed array of detectors, keyed by connectionId</p></div></div><div class="code"><div class="wrapper">   <span class="kd">var</span> <span class="nx">detectors</span> <span class="o">=</span> <span class="p">{};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><code>callbacks</code> is a hashed array, keyed by model name,
+each element is a an array of callbacks, keyed by callback type
+ex:</p></div></div><div class="code"><div class="wrapper">   </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li>callbacks
+<ol><li>face
+<ul><li>onEnter : function(){ console.log("entered face"); },</li>
+<li>onExit : function(){ console.log("face left"); },</li></ul></li>
+<li>hand
+<ul><li>onEnter : function(){ console.log("entered hand"); },</li>
+<li>onExit : function(){ console.log("no more hand"); },</li></ul></li></ol></li>
+</ul></div></div><div class="code"><div class="wrapper">   
+   <span class="kd">var</span> <span class="nx">callbacks</span> <span class="o">=</span> <span class="p">{};</span>
 
    <span class="kd">var</span> <span class="nx">fireEnteredCallback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">model_name</span><span class="p">){</span>
-      <span class="k">if</span><span class="p">(</span> 
-          <span class="o">!</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">]</span> <span class="o">||</span> 
-          <span class="o">!</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">][</span><span class="s1">&#39;onEnter&#39;</span><span class="p">])</span> <span class="p">{</span>
-        <span class="c1">//Faily silently if nothing to do</span>
-        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-      <span class="p">}</span>
-      <span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">][</span><span class="s1">&#39;onEnter&#39;</span><span class="p">]();</span>
+      <span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">]</span> <span class="o">||</span> <span class="o">!</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">][</span><span class="s1">&#39;onEnter&#39;</span><span class="p">])</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Fail silently if nothing to do</p></div></div><div class="code"><div class="wrapper">        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+      <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Execute the callback</p></div></div><div class="code"><div class="wrapper">      <span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">][</span><span class="s1">&#39;onEnter&#39;</span><span class="p">]();</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
    <span class="p">};</span>
 

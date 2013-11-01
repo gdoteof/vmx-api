@@ -17,8 +17,18 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['src/**/*.js'],
+        src: 'src/**/*.js',
         dest: 'dist/<%= pkg.name %>.js'
+      }
+    },
+    strip_code: {
+      options: {
+        start_comment : "start-test-code",
+        end_comment   : "end-test-code",
+      },
+      your_target: {
+        // a list of files you want to strip code from
+        src: "<%= concat.dist.dest %>",
       }
     },
     uglify: {
@@ -26,7 +36,7 @@ module.exports = function(grunt) {
         banner: '<%= banner %>'
       },
       dist: {
-        src: '<%= concat.dist.dest %>',
+        src: "<%= concat.dist.dest %>",
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
@@ -61,6 +71,9 @@ module.exports = function(grunt) {
       },
       lib_test: {
         src: ['lib/**/*.js', 'test/**/*.js', 'src/**/*.js']
+      },
+      spec_test: {
+        src: ['spec/**/*.js']
       }
     },
     watch: {
@@ -71,16 +84,6 @@ module.exports = function(grunt) {
       lib_test: {
         files: '<%= jshint.lib_test.src %>',
         tasks: ['jshint:lib_test', 'nodeunit']
-      }
-    },
-    strip_code: {
-      options: {
-        start_comment : "start-test-code",
-        end_comment   : "end-test-code",
-      },
-      your_target: {
-        // a list of files you want to strip code from
-        src: "src/**/*.js"
       }
     },
     groc: {
@@ -111,7 +114,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-groc');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'uglify','strip_code']);
+  grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'strip_code', 'uglify']);
   grunt.registerTask('docs', ['groc:pub','groc:local']);
 
 };

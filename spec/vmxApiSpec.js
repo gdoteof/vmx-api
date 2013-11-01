@@ -1,8 +1,7 @@
-'use strict';
-
-/*globals vmxApi:false*/
+/*globals vmxApi:true,  spyOn: true, beforeEach: true, it: true, describe: true, expect:true*/
 
 describe("vmxApi", function() {
+  'use strict';
   var hand_dets,face_dets;
   var face_params;
   beforeEach(function() {
@@ -39,7 +38,7 @@ describe("vmxApi", function() {
     face_params ={
       detections: face_dets,
       connectionId: 'foo',
-    }
+    };
   });
 
 
@@ -52,7 +51,7 @@ describe("vmxApi", function() {
   });
 
   it("should not find any detections if nothing's been processed", function(){
-    expect(function(){vmxApi('hand')}).toThrow('No detector');
+    expect(vmxApi('face').everDetected()).toBe(false);
   });
 
   it("should find detections it has processed", function(){
@@ -60,25 +59,29 @@ describe("vmxApi", function() {
     expect(vmxApi('face')).toBeTruthy();
   });
 
-  it("it should be able to fully reset itself", function(){
+  it("should be able to fully reset itself", function(){
     //This test should probably be more robust
     vmxApi.processServerResponse(face_params);
     expect(vmxApi('face')).toBeTruthy();
     vmxApi.reset();
-    expect(function(){vmxApi('hand')}).toThrow('No detector');
-    expect(function(){vmxApi('face')}).toThrow('No detector');
+    expect(vmxApi('face').everDetected()).toBe(false);
+    expect(vmxApi('face').everDetected()).toBe(false);
   });
 
-  it("it should know if it's ever seen a model", function(){
+  it("should know if it's ever seen a model", function(){
     vmxApi.processServerResponse(face_params);
     expect(vmxApi('face')).toBeTruthy();
     expect(vmxApi('face').everDetected()).toBe(true);
   });
 
-  it("it should successfully execute a callback upon detection", function(){
+  it("should try and execute a callback upon detection", function(){
     //We use the __test__ name space to test functions that aren't pubically accessible
-    spyOn(vmxApi.__test__,'fireEnteredCallback').andCallFake(function(e){
-      e.processServerResponse(face_params);
-    })
+    spyOn(vmxApi.__test__,'fireEnteredCallback');
+    vmxApi.processServerResponse(face_params);
+    expect(vmxApi('face').__test__.fireEnteredCallback).toHaveBeenCalled();
+  });
+
+  it("should successfully fire a callback registerd as an onEnter function", function(){
+    vmxApi('hand').onEnter(function(){console.log("hand entered");});
   });
 });

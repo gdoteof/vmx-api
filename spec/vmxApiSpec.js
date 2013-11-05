@@ -2,12 +2,44 @@
 
 describe("vmxApi", function() {
   'use strict';
-  var hand_dets,face_dets;
-  var face_params,hand_params;
+  var hand_dets_neg,face_dets_neg;
+  var hand_dets_pos,face_dets_pos;
+  var face_params_neg,hand_params_neg;
+  var face_params_pos,hand_params_pos;
+  var empty_params;
+  var default_config;
+  var DefaultConfig;
   beforeEach(function() {
     //Before eachtest, we set up some useful face_params.
     vmxApi.reset();
-    hand_dets = [
+    hand_dets_pos = [
+      {
+        bb: {
+          0: 391.48,
+          1: 542.64,
+          2: 612.87,
+          3: 627.4,
+        },
+        cls: "hand",
+        image: "data:image/jpeg;base64,/9j/4AAQSk",
+        score: 1,
+      }
+    ];
+
+    face_dets_pos = [
+      {
+        bb: {
+          0: 391.48,
+          1: 542.64,
+          2: 612.87,
+          3: 627.4,
+        },
+        cls: "face",
+        image: "data:image/jpeg;base64,/9j/4AAQSk",
+        score: -0.994451,
+      }
+    ];
+    hand_dets_neg = [
       {
         bb: {
           0: 391.48,
@@ -21,7 +53,7 @@ describe("vmxApi", function() {
       }
     ];
 
-    face_dets = [
+    face_dets_neg = [
       {
         bb: {
           0: 391.48,
@@ -35,15 +67,33 @@ describe("vmxApi", function() {
       }
     ];
 
-    face_params ={
-      detections: face_dets,
+    face_params_neg ={
+      detections: face_dets_neg,
       connectionId: 'foo',
     };
     
-    hand_params ={
-      detections: hand_dets,
+    hand_params_neg ={
+      detections: hand_dets_neg,
       connectionId: 'bar',
     };
+    face_params_pos ={
+      detections: face_dets_pos,
+      connectionId: 'foo',
+    };
+    
+    hand_params_pos ={
+      detections: hand_dets_pos,
+      connectionId: 'bar',
+    };
+
+    empty_params = {};
+    DefaultConfig = function(){
+     return {
+       minScore : 0.01,
+       minTime : 1000*60*5, //5 minutes;
+     };
+    };
+    default_config = new DefaultConfig();
   });
 
 
@@ -52,7 +102,7 @@ describe("vmxApi", function() {
   });
 
   it("should accept detections from the server", function(){
-    expect(vmxApi.processServerResponse(face_params)).toBeTruthy();
+    expect(vmxApi.processServerResponse(face_params_pos)).toBeTruthy();
   });
 
   it("should not allow any params to everDetected()", function(){
@@ -65,13 +115,13 @@ describe("vmxApi", function() {
   });
 
   it("should find detections it has processed", function(){
-    vmxApi.processServerResponse(face_params);
+    vmxApi.processServerResponse(face_params_pos);
     expect(vmxApi('face')).toBeTruthy();
   });
 
   it("should be able to fully reset itself", function(){
     //This test should probably be more robust
-    vmxApi.processServerResponse(face_params);
+    vmxApi.processServerResponse(face_params_pos);
     expect(vmxApi('face')).toBeTruthy();
     vmxApi.reset();
     expect(vmxApi('face').everDetected()).toBe(false);
@@ -79,61 +129,77 @@ describe("vmxApi", function() {
   });
 
   it("should know if it's ever seen a model", function(){
-    vmxApi.processServerResponse(face_params);
+    vmxApi.processServerResponse(face_params_pos);
     expect(vmxApi('face')).toBeTruthy();
     expect(vmxApi('face').everDetected()).toBe(true);
   });
 
-  it("should successfully fire a callback registerd as an onEnter function when something enters", function(){
-    var toBeSpied = {
-      callback                : function(){},
-      callback_sanity_checker : function(){},
-    };
 
-    
-    spyOn(toBeSpied,'callback');
-    spyOn(toBeSpied,'callback_sanity_checker');
+  describe("onEnter", function() {
+    it("should fire when it sees a detection with minimum score", function(){
+      var toBeSpied = {
+        callback                : function(){},
+        callback_sanity_checker : function(){},
+      };
+      
+      spyOn(toBeSpied,'callback');
+      spyOn(toBeSpied,'callback_sanity_checker');
 
-    var params = {};
-    var config = {
-     minScore : .01,
-     minTime : 1000*60*5, //5 minutes;
-    }
+      vmxApi('hand').onEnter(toBeSpied.callback, empty_params, default_config);
 
-    vmxApi('hand').onEnter(toBeSpied.callback, params, config);
+      vmxApi.processServerResponse(hand_params_pos);
 
-    vmxApi.processServerResponse(hand_params);
+      expect(toBeSpied.callback)
+            .toHaveBeenCalled();
 
-    expect(toBeSpied.callback)
-          .toHaveBeenCalled();
-
-    expect(toBeSpied.callback_sanity_checker)
-          .not.toHaveBeenCalled();
+      expect(toBeSpied.callback_sanity_checker)
+            .not.toHaveBeenCalled();
+    });
   });
 
-  it("should successfully fire a callback registered as an onLeave function when something leaves", function(){
-    var toBeSpied = {
-      callback                : function(){},
-      callback_sanity_checker : function(){},
-    };
-    
-    spyOn(toBeSpied,'callback');
-    spyOn(toBeSpied,'callback_sanity_checker');
+  describe("onLeave", function() {
+    it("should onLeave function when something leaves", function(){
+      var toBeSpied = {
+        callback                : function(){},
+        callback_sanity_checker : function(){},
+      };
+      
+      spyOn(toBeSpied,'callback');
+      spyOn(toBeSpied,'callback_sanity_checker');
 
-    var params = {};
-    var config = {
-     minScore : .01,
-     minTime : 1000*60*5, //5 minutes;
-    }
-    vmxApi('hand').onLeave(toBeSpied.callback, params, config);
 
-    vmxApi.processServerResponse(hand_params);
+      var now = (new Date()).getTime();
+      var config = new DefaultConfig();
+      //Something has to be gone for ten minutes
+      config.minTime = 1000 * 60 * 10;
+      config.minScore = 0;
 
-    expect(toBeSpied.callback)
-          .toHaveBeenCalled();
+      var fakeTime = now;
+      Date.prototype.getTime = function(){
+        return fakeTime;
+      };
+      
+      vmxApi('hand').onLeave(toBeSpied.callback, empty_params, config);
+      // Send server a positive so the leave function can fire
+      vmxApi.processServerResponse(hand_params_pos);
+      expect(toBeSpied.callback)
+            .not.toHaveBeenCalled();
 
-    expect(toBeSpied.callback_sanity_checker)
-          .not.toHaveBeenCalled();
+      // bumptime by a minute
+      fakeTime += 1000 * 60;
+
+      // Send it a negative
+      vmxApi.processServerResponse(hand_params_neg);
+      expect(toBeSpied.callback)
+            .not.toHaveBeenCalled();
+
+      // wait another ten minutes
+      fakeTime += 1000 * 60 * 10;
+      vmxApi.processServerResponse(hand_params_neg);
+      expect(toBeSpied.callback)
+            .toHaveBeenCalled();
+
+    });
   });
 
 

@@ -48,7 +48,7 @@ function VmxApi(){
 
     // Process onEnter
     cb = _cbs.onEnter;
-    if (cb && score > cb.minScore){
+    if (cb && score >= cb.minScore){
       if(!cb.lastMet || cb.lastMet + cb.minTime >= now){
         cb.callback(cb.params);
       }
@@ -58,10 +58,17 @@ function VmxApi(){
     // Process onLeave
     cb = _cbs.onLeave;
     if (cb && score < cb.minScore){
-      if(!cb.lastMet || cb.lastMet + cb.minTime >= now){
+      if(cb.startedLeaving === undefined) { 
+        cb.startedLeaving = now; 
+      }
+      if(cb.canFire && cb.startedLeaving <= now - cb.minTime){
+        cb.canFire = false;
         cb.callback(cb.params);
       }
       cb.lastMet = now;
+    } else if(cb) {
+      cb.canFire = true;
+      cb.startedLeaving = undefined;
     }
   };
 

@@ -84,6 +84,10 @@ module.exports = function(grunt) {
       lib_test: {
         files: '<%= jshint.lib_test.src %>',
         tasks: ['jshint:lib_test', 'jasmine']
+      },
+      spec_test: {
+        files: '<%= jshint.spec_test.src %>',
+        tasks: ['jshint:lib_test','jshint:spec_test', 'jasmine']
       }
     },
     groc: {

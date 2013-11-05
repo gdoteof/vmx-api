@@ -161,12 +161,8 @@ describe("vmxApi", function() {
     it("should onLeave function when something leaves", function(){
       var toBeSpied = {
         callback                : function(){},
-        callback_sanity_checker : function(){},
       };
-      
       spyOn(toBeSpied,'callback');
-      spyOn(toBeSpied,'callback_sanity_checker');
-
 
       var now = (new Date()).getTime();
       var config = new DefaultConfig();
@@ -175,9 +171,9 @@ describe("vmxApi", function() {
       config.minScore = 0;
 
       var fakeTime = now;
-      Date.prototype.getTime = function(){
+      spyOn(Date.prototype,'getTime').andCallFake(function(){
         return fakeTime;
-      };
+      });
       
       vmxApi('hand').onLeave(toBeSpied.callback, empty_params, config);
       // Send server a positive so the leave function can fire

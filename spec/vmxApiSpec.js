@@ -84,23 +84,23 @@ describe("vmxApi", function() {
     expect(vmxApi('face').everDetected()).toBe(true);
   });
 
-  it("should try and execute a callback upon detection", function(){
-    //We use the __test__ name space to test functions that aren't pubically accessible
-    spyOn(vmxApi.__test__,'fireEnteredCallback');
-    vmxApi.processServerResponse(face_params);
-    expect(vmxApi('face').__test__.fireEnteredCallback).toHaveBeenCalled();
-  });
-
   it("should successfully fire a callback registerd as an onEnter function when something enters", function(){
     var toBeSpied = {
       callback                : function(){},
       callback_sanity_checker : function(){},
     };
+
     
     spyOn(toBeSpied,'callback');
     spyOn(toBeSpied,'callback_sanity_checker');
 
-    vmxApi('hand').onEnter(toBeSpied.callback);
+    var params = {};
+    var config = {
+     minScore : .01,
+     minTime : 1000*60*5, //5 minutes;
+    }
+
+    vmxApi('hand').onEnter(toBeSpied.callback, params, config);
 
     vmxApi.processServerResponse(hand_params);
 
@@ -120,7 +120,12 @@ describe("vmxApi", function() {
     spyOn(toBeSpied,'callback');
     spyOn(toBeSpied,'callback_sanity_checker');
 
-    vmxApi('hand').onLeave(toBeSpied.callback);
+    var params = {};
+    var config = {
+     minScore : .01,
+     minTime : 1000*60*5, //5 minutes;
+    }
+    vmxApi('hand').onLeave(toBeSpied.callback, params, config);
 
     vmxApi.processServerResponse(hand_params);
 

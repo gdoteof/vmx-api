@@ -36,7 +36,7 @@ describe("vmxApi", function() {
         },
         cls: "face",
         image: "data:image/jpeg;base64,/9j/4AAQSk",
-        score: -0.994451,
+        score: 1,
       }
     ];
     hand_dets_neg = [
@@ -155,21 +155,65 @@ describe("vmxApi", function() {
       expect(toBeSpied.callback_sanity_checker)
             .not.toHaveBeenCalled();
     });
+    it("should should handle time thresholds correctly", function(){
+      var toBeSpied = {
+        callback                : function(){},
+        callback_sanity_checker : function(){},
+      };
+
+      var now = (new Date()).getTime();
+      var fakeTime = now;
+      spyOn(Date.prototype,'getTime').andCallFake(function(){
+        return fakeTime;
+      });
+
+      spyOn(toBeSpied,'callback');
+      spyOn(toBeSpied,'callback_sanity_checker');
+
+      vmxApi('hand').onEnter(toBeSpied.callback, empty_params, default_config);
+
+      expect(toBeSpied.callback)
+            .not.toHaveBeenCalled();
+
+
+      vmxApi.processServerResponse(hand_params_pos);
+      expect(toBeSpied.callback)
+            .toHaveBeenCalled();
+      expect(toBeSpied.callback.callCount).toBe(1);
+      
+      fakeTime += 1000;
+      vmxApi.processServerResponse(hand_params_pos);
+      expect(toBeSpied.callback.callCount).toBe(1);
+      // Lets make a hundred fake positives 1second apart
+      for(var y = 0; y<100; ++y){
+        fakeTime += 1000;
+        vmxApi.processServerResponse(hand_params_pos);
+        expect(toBeSpied.callback.callCount).toBe(1);
+      }
+
+      // Lets make a hundred fake positives 10 minutes apart
+      for(var x = 2; x<100; ++x){
+        fakeTime += 1000 * 60 * 10;
+        vmxApi.processServerResponse(hand_params_pos);
+        expect(toBeSpied.callback.callCount).toBe(x);
+      }
+      
+    });
   });
 
   describe("onLeave", function() {
     it("should onLeave function when something leaves", function(){
       var toBeSpied = {
-        callback                : function(){},
+        callback  : function(){},
       };
       spyOn(toBeSpied,'callback');
 
-      var now = (new Date()).getTime();
       var config = new DefaultConfig();
       //Something has to be gone for ten minutes
       config.minTime = 1000 * 60 * 10;
       config.minScore = 0;
 
+      var now = (new Date()).getTime();
       var fakeTime = now;
       spyOn(Date.prototype,'getTime').andCallFake(function(){
         return fakeTime;
@@ -191,6 +235,8 @@ describe("vmxApi", function() {
 
       // wait another ten minutes
       fakeTime += 1000 * 60 * 10;
+
+      // send another negative
       vmxApi.processServerResponse(hand_params_neg);
       expect(toBeSpied.callback)
             .toHaveBeenCalled();

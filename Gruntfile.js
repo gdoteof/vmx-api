@@ -24,11 +24,11 @@ module.exports = function(grunt) {
     strip_code: {
       options: {
         start_comment : "start-test-code",
-        end_comment   : "end-test-code",
+        end_comment   : "end-test-code"
       },
       your_target: {
         // a list of files you want to strip code from
-        src: "<%= concat.dist.dest %>",
+        src: "<%= concat.dist.dest %>"
       }
     },
     uglify: {
@@ -44,26 +44,27 @@ module.exports = function(grunt) {
       src : ['src/**/*.js','lib/<%= pkg.name %>.js'],
       options : {
         specs      : 'spec/**/*.js',
-        keepRunner : true,
+        keepRunner : true
       }
     },
     jshint: {
       options: {
-        curly: true,
-        eqeqeq: true,
-        immed: true,
-        latedef: true,
-        newcap: true,
-        noarg: true,
-        sub: true,
-        undef: true,
-        unused: true,
-        boss: true,
-        eqnull: true,
-        globals: {
-          jQuery: true,
-          window: true,
-          console: true,
+        curly   : true,
+        eqeqeq  : true,
+        immed   : true,
+        latedef : true,
+        newcap  : true,
+        noarg   : true,
+        sub     : true,
+        undef   : true,
+        unused  : true,
+        boss    : true,
+        eqnull  : true,
+        es3     : true,
+        globals : {
+          jQuery  : true,
+          window  : true,
+          console : true
         }
       },
       gruntfile: {
@@ -95,16 +96,16 @@ module.exports = function(grunt) {
       javascript:["src/**/*.js"],
       src:["src/**/*.js"],
         options: {
-          out: 'docs',
-        },
+          out: 'docs'
+        }
       },
       pub : {
       javascript:["src/**/*.js"],
       src:["src/**/*.js"],
         options: {
-          github: true,
-        },
-      },
+          github: true
+        }
+      }
     }
   });
 

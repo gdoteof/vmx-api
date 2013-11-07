@@ -37,9 +37,6 @@ function VmxApi(){
   
   var callbacks = {};
 
-  // `last_seen` is a hashed array of time stamps for the last time a detection was seen
-  //var last_seen = {};
-
   var doCallbacks = function(model_name,detections, now){
     // Do nothing if no registered callbacks;
     if(! callbacks[model_name] ) { return this; }

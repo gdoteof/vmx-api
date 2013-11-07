@@ -18,11 +18,11 @@ describe("vmxApi", function() {
           0: 391.48,
           1: 542.64,
           2: 612.87,
-          3: 627.4,
+          3: 627.4
         },
         cls: "hand",
         image: "data:image/jpeg;base64,/9j/4AAQSk",
-        score: 1,
+        score: 1
       }
     ];
 
@@ -32,11 +32,11 @@ describe("vmxApi", function() {
           0: 391.48,
           1: 542.64,
           2: 612.87,
-          3: 627.4,
+          3: 627.4
         },
         cls: "face",
         image: "data:image/jpeg;base64,/9j/4AAQSk",
-        score: 1,
+        score: 1
       }
     ];
     hand_dets_neg = [
@@ -45,11 +45,11 @@ describe("vmxApi", function() {
           0: 391.48,
           1: 542.64,
           2: 612.87,
-          3: 627.4,
+          3: 627.4
         },
         cls: "hand",
         image: "data:image/jpeg;base64,/9j/4AAQSk",
-        score: -0.994451,
+        score: -0.994451
       }
     ];
 
@@ -59,38 +59,38 @@ describe("vmxApi", function() {
           0: 391.48,
           1: 542.64,
           2: 612.87,
-          3: 627.4,
+          3: 627.4
         },
         cls: "face",
         image: "data:image/jpeg;base64,/9j/4AAQSk",
-        score: -0.994451,
+        score: -0.994451
       }
     ];
 
     face_params_neg ={
       detections: face_dets_neg,
-      connectionId: 'foo',
+      connectionId: 'foo'
     };
     
     hand_params_neg ={
       detections: hand_dets_neg,
-      connectionId: 'bar',
+      connectionId: 'bar'
     };
     face_params_pos ={
       detections: face_dets_pos,
-      connectionId: 'foo',
+      connectionId: 'foo'
     };
     
     hand_params_pos ={
       detections: hand_dets_pos,
-      connectionId: 'bar',
+      connectionId: 'bar'
     };
 
     empty_params = {};
     DefaultConfig = function(){
      return {
        minScore : 0.01,
-       minTime : 1000*60*5, //5 minutes;
+       minTime : 1000*60*5 //5 minutes;
      };
     };
     default_config = new DefaultConfig();
@@ -139,7 +139,7 @@ describe("vmxApi", function() {
     it("should fire when it sees a detection with minimum score", function(){
       var toBeSpied = {
         callback                : function(){},
-        callback_sanity_checker : function(){},
+        callback_sanity_checker : function(){}
       };
       
       spyOn(toBeSpied,'callback');
@@ -158,7 +158,7 @@ describe("vmxApi", function() {
     it("should should handle time thresholds correctly", function(){
       var toBeSpied = {
         callback                : function(){},
-        callback_sanity_checker : function(){},
+        callback_sanity_checker : function(){}
       };
 
       var now = (new Date()).getTime();
@@ -204,7 +204,7 @@ describe("vmxApi", function() {
   describe("onLeave", function() {
     it("should onLeave function when something leaves", function(){
       var toBeSpied = {
-        callback  : function(){},
+        callback  : function(){}
       };
       spyOn(toBeSpied,'callback');
 

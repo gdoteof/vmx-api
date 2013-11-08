@@ -10,7 +10,7 @@ function VmxApi(){
   var detectors = {};
 
   // `callbacks` is a hashed array, keyed by model name,
-  // each element is a an array of callbacks, keyed by callback type
+  // each element is a an array of callbacks,
   // ex:
   
   // * callbacks
@@ -30,9 +30,11 @@ function VmxApi(){
   //              - canFire: false,   // a flag saying whether or not this can fire (can't leave if you never entered) -- this is used internally only
   //              - startedLeaving: 1383657047  // a flag to keep track of when this started leaving
   //      1. hand
-  //          - onEnter : function(){ console.log("entered hand"); },
+  //          - onEnter : 
+  //              - callback ...
   //              - ...
-  //          - onExit : function(){ console.log("no more hand"); },
+  //          - onExit : 
+  //              - callback ...
   //              - ...
   
   var callbacks = {};

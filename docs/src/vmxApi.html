@@ -5,28 +5,88 @@
 <span class="kd">var</span> <span class="nx">_vmxApi</span><span class="p">;</span>
 
 <span class="kd">function</span> <span class="nx">VmxApi</span><span class="p">(){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><code>detectors</code> is a hashed array, keyed by model name; 
- Each element is itself a hashed array of detectors, keyed by connectionId</p></div></div><div class="code"><div class="wrapper">   <span class="kd">var</span> <span class="nx">detectors</span> <span class="o">=</span> <span class="p">{};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><code>callbacks</code> is a hashed array, keyed by model name,
-each element is a an array of callbacks, keyed by callback type
-ex:</p></div></div><div class="code"><div class="wrapper">   </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+ Each element is itself a hashed array of detectors, keyed by connectionId</p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">detectors</span> <span class="o">=</span> <span class="p">{};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p><code>callbacks</code> is a hashed array, keyed by model name,
+each element is a an array of callbacks,
+ex:</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
 <li>callbacks
 <ol><li>face
-<ul><li>onEnter : function(){ console.log("entered face"); },</li>
-<li>onExit : function(){ console.log("face left"); },</li></ul></li>
+<ul><li>onEnter : 
+<ul><li><code>callback</code>: <code>function(params){ console.log("Hello,", params.name) }</code></li>
+<li><code>params</code> : <code>{name: 'Bobby Tables'}</code></li>
+<li>minScore: 0,  // any score above this will count as the object 'being here'</li>
+<li>minTime: 1000 * 60 * 5, //something must be gone for five minutes to be able to enter</li>
+<li>lastMet: 1383677047   //time stamp for last time minScore was met</li></ul></li>
+<li>onExit : function(){ console.log("face left"); },
+<ul><li>callback: function(params){ console.log("Goodbye,", params.name) },</li>
+<li>params: {name: 'Bobby Tables'},</li>
+<li>minScore: 0, // any score below this will count as the object 'not being here'</li>
+<li>minTime: 1000 * 60 * 5, //something must be gone for five minutes to be considered to have left</li>
+<li>lastMet: 1383677047  //timestamp for lastitme min score was NOT met</li>
+<li>canFire: false,   // a flag saying whether or not this can fire (can't leave if you never entered) -- this is used internally only</li>
+<li>startedLeaving: 1383657047  // a flag to keep track of when this started leaving</li></ul></li></ul></li>
 <li>hand
-<ul><li>onEnter : function(){ console.log("entered hand"); },</li>
-<li>onExit : function(){ console.log("no more hand"); },</li></ul></li></ol></li>
-</ul></div></div><div class="code"><div class="wrapper">   
-   <span class="kd">var</span> <span class="nx">callbacks</span> <span class="o">=</span> <span class="p">{};</span>
+<ul><li>onEnter : 
+<ul><li>callback ...</li>
+<li>...</li></ul></li>
+<li>onExit : 
+<ul><li>callback ...</li>
+<li>...</li></ul></li></ul></li></ol></li>
+</ul></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">callbacks</span> <span class="o">=</span> <span class="p">{};</span>
+  
+  </div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>doCallbacks takes a model_name (string), an array of detections (from a detector) and the timestamp for now </p></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">doCallbacks</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">model_name</span><span class="p">,</span><span class="nx">detections</span><span class="p">,</span> <span class="nx">now</span><span class="p">){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Do nothing if no registered callbacks;</p></div></div><div class="code"><div class="wrapper">    <span class="k">if</span><span class="p">(</span><span class="o">!</span> <span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="k">this</span><span class="p">;</span> <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">_cbs</span> <span class="o">=</span> <span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">score</span> <span class="o">=</span> <span class="nx">detections</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">score</span><span class="p">;</span>  <span class="c1">// score is the highest scoring detection</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Process onEnter</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">onEnter</span> <span class="o">=</span> <span class="nx">_cbs</span><span class="p">.</span><span class="nx">onEnter</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">onEnter</span> <span class="o">&amp;&amp;</span> <span class="nx">score</span> <span class="o">&gt;=</span> <span class="nx">onEnter</span><span class="p">.</span><span class="nx">minScore</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">onEnter</span><span class="p">.</span><span class="nx">lastMet</span> <span class="o">||</span> <span class="nx">onEnter</span><span class="p">.</span><span class="nx">lastMet</span> <span class="o">+</span> <span class="nx">onEnter</span><span class="p">.</span><span class="nx">minTime</span> <span class="o">&lt;=</span> <span class="nx">now</span><span class="p">){</span>
+        <span class="nx">onEnter</span><span class="p">.</span><span class="nx">callback</span><span class="p">(</span><span class="nx">onEnter</span><span class="p">.</span><span class="nx">params</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="nx">onEnter</span><span class="p">.</span><span class="nx">lastMet</span> <span class="o">=</span> <span class="nx">now</span><span class="p">;</span>
+    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Process onLeave</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">onLeave</span> <span class="o">=</span> <span class="nx">_cbs</span><span class="p">.</span><span class="nx">onLeave</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">onLeave</span> <span class="o">&amp;&amp;</span> <span class="nx">score</span> <span class="o">&lt;</span> <span class="nx">onLeave</span><span class="p">.</span><span class="nx">minScore</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">onLeave</span><span class="p">.</span><span class="nx">startedLeaving</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="nx">onLeave</span><span class="p">.</span><span class="nx">startedLeaving</span> <span class="o">=</span> <span class="nx">now</span><span class="p">;</span> 
+      <span class="p">}</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">onLeave</span><span class="p">.</span><span class="nx">canFire</span> <span class="o">&amp;&amp;</span> <span class="nx">onLeave</span><span class="p">.</span><span class="nx">startedLeaving</span> <span class="o">+</span> <span class="nx">onLeave</span><span class="p">.</span><span class="nx">minTime</span> <span class="o">&lt;=</span> <span class="nx">now</span><span class="p">){</span>
+        <span class="nx">onLeave</span><span class="p">.</span><span class="nx">canFire</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="nx">onLeave</span><span class="p">.</span><span class="nx">callback</span><span class="p">(</span><span class="nx">onLeave</span><span class="p">.</span><span class="nx">params</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="nx">onLeave</span><span class="p">.</span><span class="nx">lastMet</span> <span class="o">=</span> <span class="nx">now</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">onLeave</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">onLeave</span><span class="p">.</span><span class="nx">canFire</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="nx">onLeave</span><span class="p">.</span><span class="nx">startedLeaving</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">};</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>registerCallback sets up a callback for a model</p></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><ul>
+<li>modelName(string)</li>
+<li>type(string) - onEnter, onLeave</li>
+<li>callbackFunction(function) - a function to be called</li>
+<li>params(object) - the params that will be sent to the callback function</li>
+<li>config(object) - a config option to control thresholds on the callback (ie, minScore or minTime)</li>
+</ul></div></div><div class="code"><div class="wrapper">  <span class="kd">var</span> <span class="nx">registerCallback</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">modelName</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">callbackFunction</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">config</span><span class="p">){</span>
+     <span class="kd">var</span> <span class="nx">minScore</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">minScore</span> <span class="o">||</span>   <span class="mf">0.1</span><span class="p">;</span>
+     <span class="kd">var</span> <span class="nx">minTime</span>  <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">minTime</span>  <span class="o">||</span> <span class="mi">30000</span><span class="p">;</span>
+     <span class="kd">var</span> <span class="nx">canFire</span>  <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">canFire</span><span class="p">;</span>
+     <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">modelName</span><span class="p">])</span> <span class="p">{</span> <span class="nx">callbacks</span><span class="p">[</span><span class="nx">modelName</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span> <span class="p">}</span>
+     <span class="nx">callbacks</span><span class="p">[</span><span class="nx">modelName</span><span class="p">][</span><span class="nx">type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nx">callback</span> <span class="o">:</span> <span class="nx">callbackFunction</span><span class="p">,</span> 
+        <span class="nx">params</span>   <span class="o">:</span> <span class="nx">params</span><span class="p">,</span>
+        <span class="nx">minScore</span> <span class="o">:</span> <span class="nx">minScore</span><span class="p">,</span>
+        <span class="nx">minTime</span>  <span class="o">:</span> <span class="nx">minTime</span><span class="p">,</span>
+        <span class="nx">lastMet</span>  <span class="o">:</span> <span class="kc">undefined</span><span class="p">,</span>
+        <span class="nx">canFire</span>  <span class="o">:</span> <span class="kc">undefined</span>
+     <span class="p">};</span>
 
-   <span class="kd">var</span> <span class="nx">fireEnteredCallback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">model_name</span><span class="p">){</span>
-      <span class="k">if</span><span class="p">(</span> <span class="o">!</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">]</span> <span class="o">||</span> <span class="o">!</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">][</span><span class="s1">&#39;onEnter&#39;</span><span class="p">])</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Fail silently if nothing to do</p></div></div><div class="code"><div class="wrapper">        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-      <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Execute the callback</p></div></div><div class="code"><div class="wrapper">      <span class="nx">callbacks</span><span class="p">[</span><span class="nx">model_name</span><span class="p">][</span><span class="s1">&#39;onEnter&#39;</span><span class="p">]();</span>
-      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-   <span class="p">};</span>
-
+     <span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;onLeave&#39;</span><span class="p">)</span> <span class="p">{</span>
+       <span class="kd">var</span> <span class="nx">onEnter</span> <span class="o">=</span> <span class="nx">callbacks</span><span class="p">[</span><span class="nx">modelName</span><span class="p">].</span><span class="nx">onEnter</span><span class="p">;</span>
+       <span class="k">if</span><span class="p">((</span><span class="nx">onEnter</span> <span class="o">&amp;&amp;</span> <span class="nx">onEnter</span><span class="p">.</span><span class="nx">lastMet</span><span class="p">)</span> <span class="o">||</span> <span class="nx">canFire</span><span class="p">){</span>
+          <span class="nx">callbacks</span><span class="p">[</span><span class="nx">modelName</span><span class="p">][</span><span class="nx">type</span><span class="p">].</span><span class="nx">canFire</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> 
+       <span class="p">}</span>
+     <span class="p">}</span>
+  <span class="p">};</span>
+  
   <span class="k">return</span> <span class="p">{</span>
     <span class="nx">reset</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
       <span class="nx">detectors</span> <span class="o">=</span> <span class="p">{};</span>
+      <span class="nx">callbacks</span> <span class="o">=</span> <span class="p">{};</span>
     <span class="p">},</span>
     <span class="nx">select</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">selector</span><span class="p">){</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">selector</span> <span class="o">=</span> <span class="nx">selector</span><span class="p">;</span>
@@ -37,29 +97,35 @@ ex:</p></div></div><div class="code"><div class="wrapper">   </div></div></div><
     <span class="p">},</span>
     <span class="nx">processServerResponse</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">params</span><span class="p">){</span>
       <span class="kd">var</span> <span class="nx">detections</span>   <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">detections</span><span class="p">;</span>
+      <span class="c1">//NOTE: Detectors should be able to receive have their own name</span>
       <span class="kd">var</span> <span class="nx">model_name</span>   <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">name</span> <span class="o">||</span> <span class="nx">detections</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">cls</span><span class="p">;</span>
       <span class="kd">var</span> <span class="nx">connectionId</span> <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">connectionId</span><span class="p">;</span>
       <span class="kd">var</span> <span class="nx">_detector</span><span class="p">;</span>
-      <span class="kd">var</span> <span class="nx">_like_detectors</span><span class="p">;</span>
-      <span class="k">if</span><span class="p">(</span><span class="nx">_like_detectors</span> <span class="o">=</span> <span class="nx">detectors</span><span class="p">[</span><span class="nx">model_name</span><span class="p">]){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>There are already detectors for this model running </p></div></div><div class="code"><div class="wrapper">        <span class="k">if</span> <span class="p">(</span><span class="nx">_detector</span> <span class="o">=</span> <span class="nx">_like_detectors</span><span class="p">[</span><span class="nx">connectionId</span><span class="p">]){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This model is already running, and we should do something 
-NOTE: what do when it already exists?</p></div></div><div class="code"><div class="wrapper">          <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is the first time a detector has fired for this model</p></div></div><div class="code"><div class="wrapper">          <span class="nx">_detector</span> <span class="o">=</span> <span class="nx">detectors</span><span class="p">[</span><span class="nx">model_name</span><span class="p">][</span><span class="nx">connectionId</span><span class="p">]</span> <span class="o">=</span> <span class="nx">detections</span><span class="p">;</span>
-          <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-        <span class="p">}</span>
+      <span class="kd">var</span> <span class="nx">now</span> <span class="o">=</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()).</span><span class="nx">getTime</span><span class="p">();</span>
+      <span class="nx">doCallbacks</span><span class="p">(</span><span class="nx">model_name</span><span class="p">,</span> <span class="nx">detections</span><span class="p">,</span> <span class="nx">now</span><span class="p">);</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">_detector</span> <span class="o">=</span> <span class="nx">detectors</span><span class="p">[</span><span class="nx">model_name</span><span class="p">]){</span>
+        <span class="nx">_detector</span><span class="p">[</span><span class="nx">connectionId</span><span class="p">]</span> <span class="o">=</span> <span class="nx">detections</span><span class="p">;</span>
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This is the first firing of ANY detector for this model_name </p></div></div><div class="code"><div class="wrapper">        <span class="nx">detectors</span><span class="p">[</span><span class="nx">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
         <span class="nx">detectors</span><span class="p">[</span><span class="nx">model_name</span><span class="p">][</span><span class="nx">connectionId</span><span class="p">]</span> <span class="o">=</span> <span class="nx">detections</span><span class="p">;</span>
-        <span class="nx">fireEnteredCallback</span><span class="p">(</span><span class="nx">model_name</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>start-test-code </p></div></div><div class="code"><div class="wrapper">        <span class="k">this</span><span class="p">.</span><span class="nx">__test__</span><span class="p">.</span><span class="nx">fireEnteredCallback</span><span class="p">(</span><span class="nx">model_name</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>end-test-code </p></div></div><div class="code"><div class="wrapper">      <span class="p">}</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;process_server_response called for&quot;</span><span class="p">,</span> <span class="nx">model_name</span><span class="p">);</span>
+      <span class="p">}</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
-    <span class="nx">onEnter</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callbackFunction</span><span class="p">){</span>
-      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">callbacks</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">selector</span><span class="p">])</span> <span class="p">{</span> <span class="nx">callbacks</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">selector</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span> <span class="p">}</span>
-      <span class="nx">callbacks</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">selector</span><span class="p">][</span><span class="s1">&#39;onEnter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">callbackFunction</span><span class="p">;</span> 
+    <span class="nx">onEnter</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callbackFunction</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">config</span><span class="p">){</span>
+      <span class="nx">registerCallback</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">selector</span><span class="p">,</span> <span class="s1">&#39;onEnter&#39;</span><span class="p">,</span> <span class="nx">callbackFunction</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">config</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
-    <span class="nx">everDetected</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(){</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This weird check makes sure that $selected hasn't changed itself to something that is falsy but not 'null'</p></div></div><div class="code"><div class="wrapper">      <span class="k">return</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">$selected</span> <span class="o">!==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!!</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">$selected</span><span class="p">));</span>
-    <span class="p">},</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>start-test-code </p></div></div><div class="code"><div class="wrapper">    <span class="nx">__test__</span> <span class="o">:</span> <span class="p">{</span>
-      <span class="nx">fireEnteredCallback</span><span class="o">:</span> <span class="nx">fireEnteredCallback</span><span class="p">,</span>
-    <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>end-test-code </p></div></div><div class="code"><div class="wrapper">  <span class="p">};</span>
+    <span class="nx">onLeave</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callbackFunction</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">config</span><span class="p">){</span>
+      <span class="nx">registerCallback</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">selector</span><span class="p">,</span> <span class="s1">&#39;onLeave&#39;</span><span class="p">,</span> <span class="nx">callbackFunction</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">config</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">everDetected</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">notUsed</span><span class="p">){</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">notUsed</span><span class="p">){</span>
+        <span class="c1">//This function should not be given a param</span>
+        <span class="kd">var</span> <span class="nx">err</span> <span class="o">=</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s2">&quot;Too many parameters&quot;</span><span class="p">,</span> <span class="nx">message</span><span class="o">:</span> <span class="s2">&quot;This functin takes no params!&quot;</span><span class="p">};</span>
+        <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+      <span class="p">}</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This weird check makes sure that $selected hasn't changed itself to something that is falsy but not 'null'</p></div></div><div class="code"><div class="wrapper">      <span class="k">return</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">$selected</span> <span class="o">!==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!!</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">$selected</span><span class="p">));</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
 <span class="p">}</span>
 
 <span class="nx">vmxApi</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">selector</span><span class="p">){</span>
@@ -76,4 +142,7 @@ NOTE: what do when it already exists?</p></div></div><div class="code"><div clas
 <span class="nx">vmxApi</span><span class="p">();</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Here we are attaching functions to the object that is vmxApi; which is also a function.
 Javascript is insane, so we use it's insanity to have sexier Api calls..
 ie, we can do vmxApi.reset() instead of having to do vmxApi().reset()</p></div></div><div class="code"><div class="wrapper"><span class="nx">vmxApi</span><span class="p">.</span><span class="nx">reset</span> <span class="o">=</span> <span class="nx">_vmxApi</span><span class="p">.</span><span class="nx">reset</span><span class="p">;</span>
-<span class="nx">vmxApi</span><span class="p">.</span><span class="nx">processServerResponse</span> <span class="o">=</span> <span class="nx">_vmxApi</span><span class="p">.</span><span class="nx">processServerResponse</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>start-test-code </p></div></div><div class="code"><div class="wrapper"><span class="nx">vmxApi</span><span class="p">.</span><span class="nx">__test__</span> <span class="o">=</span> <span class="nx">_vmxApi</span><span class="p">.</span><span class="nx">__test__</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>end-test-code </p></div></div><div class="code"><div class="wrapper"><span class="p">})();</span></div></div></div></div></body></html>
+<span class="nx">vmxApi</span><span class="p">.</span><span class="nx">processServerResponse</span> <span class="o">=</span> <span class="nx">_vmxApi</span><span class="p">.</span><span class="nx">processServerResponse</span><span class="p">;</span>
+
+
+<span class="p">})();</span></div></div></div></div></body></html>

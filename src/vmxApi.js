@@ -9,15 +9,16 @@ function VmxApi(){
   //  Each element is itself a hashed array of detectors, keyed by connectionId
   var detectors = {};
 
+
   // `callbacks` is a hashed array, keyed by model name,
   // each element is a an array of callbacks,
   // ex:
-  
+
   // * callbacks
   //      0. face
   //          - onEnter : 
-  //              - callback: function(params){ console.log("Hello,", params.name) },
-  //              - params: {name: 'Bobby Tables'},
+  //              - `callback`: `function(params){ console.log("Hello,", params.name) }`
+  //              - `params` : `{name: 'Bobby Tables'}`
   //              - minScore: 0,  // any score above this will count as the object 'being here'
   //              - minTime: 1000 * 60 * 5, //something must be gone for five minutes to be able to enter
   //              - lastMet: 1383677047   //time stamp for last time minScore was met
@@ -36,8 +37,11 @@ function VmxApi(){
   //          - onExit : 
   //              - callback ...
   //              - ...
-  
+
   var callbacks = {};
+  
+  
+  // doCallbacks takes a model_name (string), an array of detections (from a detector) and the timestamp for now 
 
   var doCallbacks = function(model_name,detections, now){
     // Do nothing if no registered callbacks;
@@ -72,7 +76,13 @@ function VmxApi(){
   };
 
 
-  // params(object) is used to configure the callback (setting timing thresholds, for example)
+  // registerCallback sets up a callback for a model
+
+  // - modelName(string)
+  // - type(string) - onEnter, onLeave
+  // - callbackFunction(function) - a function to be called
+  // - params(object) - the params that will be sent to the callback function
+  // - config(object) - a config option to control thresholds on the callback (ie, minScore or minTime)
   var registerCallback = function (modelName, type, callbackFunction, params, config){
      var minScore = config.minScore ||   0.1;
      var minTime  = config.minTime  || 30000;

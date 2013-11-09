@@ -1,4 +1,4 @@
-/*! vmx-api - v0.0.0 - 2013-11-05
+/*! vmx-api - v0.0.0 - 2013-11-08
 * Copyright (c) 2013 ; Licensed  */
 var vmxApi;
 (function(){
@@ -12,7 +12,7 @@ function VmxApi(){
   var detectors = {};
 
   // `callbacks` is a hashed array, keyed by model name,
-  // each element is a an array of callbacks, keyed by callback type
+  // each element is a an array of callbacks,
   // ex:
   
   // * callbacks
@@ -30,47 +30,46 @@ function VmxApi(){
   //              - minTime: 1000 * 60 * 5, //something must be gone for five minutes to be considered to have left
   //              - lastMet: 1383677047  //timestamp for lastitme min score was NOT met
   //              - canFire: false,   // a flag saying whether or not this can fire (can't leave if you never entered) -- this is used internally only
+  //              - startedLeaving: 1383657047  // a flag to keep track of when this started leaving
   //      1. hand
-  //          - onEnter : function(){ console.log("entered hand"); },
+  //          - onEnter : 
+  //              - callback ...
   //              - ...
-  //          - onExit : function(){ console.log("no more hand"); },
+  //          - onExit : 
+  //              - callback ...
   //              - ...
   
   var callbacks = {};
-
-  // `last_seen` is a hashed array of time stamps for the last time a detection was seen
-  //var last_seen = {};
 
   var doCallbacks = function(model_name,detections, now){
     // Do nothing if no registered callbacks;
     if(! callbacks[model_name] ) { return this; }
     var _cbs = callbacks[model_name];
     var score = detections[0].score;  // score is the highest scoring detection
-    var cb;
 
     // Process onEnter
-    cb = _cbs.onEnter;
-    if (cb && score >= cb.minScore){
-      if(!cb.lastMet || cb.lastMet + cb.minTime >= now){
-        cb.callback(cb.params);
+    var onEnter = _cbs.onEnter;
+    if (onEnter && score >= onEnter.minScore){
+      if(!onEnter.lastMet || onEnter.lastMet + onEnter.minTime <= now){
+        onEnter.callback(onEnter.params);
       }
-      cb.lastMet = now;
+      onEnter.lastMet = now;
     }
 
     // Process onLeave
-    cb = _cbs.onLeave;
-    if (cb && score < cb.minScore){
-      if(cb.startedLeaving === undefined) { 
-        cb.startedLeaving = now; 
+    var onLeave = _cbs.onLeave;
+    if (onLeave && score < onLeave.minScore){
+      if(onLeave.startedLeaving === undefined) { 
+        onLeave.startedLeaving = now; 
       }
-      if(cb.canFire && cb.startedLeaving <= now - cb.minTime){
-        cb.canFire = false;
-        cb.callback(cb.params);
+      if(onLeave.canFire && onLeave.startedLeaving + onLeave.minTime <= now){
+        onLeave.canFire = false;
+        onLeave.callback(onLeave.params);
       }
-      cb.lastMet = now;
-    } else if(cb) {
-      cb.canFire = true;
-      cb.startedLeaving = undefined;
+      onLeave.lastMet = now;
+    } else if(onLeave) {
+      onLeave.canFire = true;
+      onLeave.startedLeaving = undefined;
     }
   };
 
@@ -87,7 +86,7 @@ function VmxApi(){
         minScore : minScore,
         minTime  : minTime,
         lastMet  : undefined,
-        canFire  : undefined,
+        canFire  : undefined
      };
 
      if (type === 'onLeave') {
@@ -143,7 +142,7 @@ function VmxApi(){
       }
       // This weird check makes sure that $selected hasn't changed itself to something that is falsy but not 'null'
       return (this.$selected !== null && !!(this.$selected));
-    },
+    }
   };
 }
 

@@ -9,6 +9,28 @@ describe("vmxApi", function() {
   var empty_params;
   var default_config;
   var DefaultConfig;
+  // Used to test the param get/set functionality
+  var VmxParams = function(){
+    this.named_params = {}; 
+    this.named_params['foo'] = 'bar';
+  };
+
+  var vmxParams;
+
+  // return value of param
+  VmxParams.prototype.get = function(name){
+    return this.named_params[name].value;
+  };
+
+  // set value of param
+  VmxParams.prototype.set = function(name, value){
+    this.named_params[name].value = value;
+  };
+
+  beforeEach(function(){
+    vmxParams = new VmxParams();
+  });
+
   beforeEach(function() {
     //Before eachtest, we set up some useful face_params.
     vmxApi.reset();
@@ -69,24 +91,29 @@ describe("vmxApi", function() {
 
     face_params_neg ={
       detections: face_dets_neg,
-      connectionId: 'foo'
+      connectionId: 'foo',
+      detectorParams:  vmxParams
     };
     
     hand_params_neg ={
       detections: hand_dets_neg,
-      connectionId: 'bar'
+      connectionId: 'bar',
+      detectorParams:  vmxParams
     };
     face_params_pos ={
       detections: face_dets_pos,
-      connectionId: 'foo'
+      connectionId: 'foo',
+      detectorParams:  vmxParams
     };
     
     hand_params_pos ={
       detections: hand_dets_pos,
-      connectionId: 'bar'
+      connectionId: 'bar',
+      detectorParams:  vmxParams
     };
 
     empty_params = {};
+    
     DefaultConfig = function(){
      return {
        minScore : 0.01,
@@ -241,6 +268,15 @@ describe("vmxApi", function() {
       expect(toBeSpied.callback)
             .toHaveBeenCalled();
 
+    });
+  });
+  describe("params", function() {
+    it("should get the value of a param", function(){
+      vmxApi.processServerResponse(face_params_pos);
+      var val = vmxApi('face').params('ilearn');
+      console.log(val);
+      expect(vmxApi('face')).toBeTruthy();
+      expect(vmxApi('face').everDetected()).toBe(true);
     });
   });
 

@@ -38,17 +38,21 @@ var detectors = {};
 //              - callback ...
 //              - ...
 
-var callbacks = {};
+  var callbacks = {};
 
-VmxApi = function VmxApi(){
+  VmxApi = function VmxApi(){
+    return this;
+  };
 
-  return this;
-};
-  
+  // Here we set up the datatype for the main datastructure being maintained to do selections against
+  var Detector = function(detections,params){
+    this.detections = detections;
+    this.params     = params;
+  };
   
   // doCallbacks takes a model_name (string), an array of detections (from a detector) and the timestamp for "now" 
 
-  var doCallbacks = function(model_name,detections, now){
+  var doCallbacks = function(model_name, detections, now){
     // Do nothing if no registered callbacks;
     if(! callbacks[model_name] ) { return this; }
     var _cbs = callbacks[model_name];
@@ -116,6 +120,7 @@ VmxApi = function VmxApi(){
       detectors = {};
       callbacks = {};
     };
+
     VmxApi.prototype.select  = function(selector){
       this.selector = selector;
       if(selector && !(this.$selected = detectors[selector])) {
@@ -123,11 +128,14 @@ VmxApi = function VmxApi(){
       }
       return this;
     };
-    VmxApi.prototype.processServerResponse  = function(params){
-      var detections   = params.detections;
+
+    VmxApi.prototype.processServerResponse  = function(vars){
+      console.log(vars);
+      var detections   = vars.detections;
+      var detectorParams = vars.detectorParams;
       //NOTE: Detectors should be able to receive have their own name
-      var model_name   = params.name || detections[0].cls;
-      var connectionId = params.connectionId;
+      var model_name   = vars.name || detections[0].cls;
+      var connectionId = vars.connectionId;
       var _detector;
       var now = (new Date()).getTime();
       doCallbacks(model_name, detections, now);
@@ -135,19 +143,23 @@ VmxApi = function VmxApi(){
         _detector[connectionId] = detections;
       } else {
         // This is the first firing of ANY detector for this model_name 
+        _detector = new Detector(detections,detectorParams);
         detectors[model_name] = {};
-        detectors[model_name][connectionId] = detections;
+        detectors[model_name][connectionId] = _detector;
       }
       return this;
     };
+
     VmxApi.prototype.onEnter  = function(callbackFunction, params, config){
       registerCallback(this.selector, 'onEnter', callbackFunction, params, config);
       return this;
     };
+
     VmxApi.prototype.onLeave  = function(callbackFunction, params, config){
       registerCallback(this.selector, 'onLeave', callbackFunction, params, config);
       return this;
     };
+    
     VmxApi.prototype.everDetected  = function(notUsed){
       if(notUsed){
         //This function should not be given a param
@@ -160,6 +172,14 @@ VmxApi = function VmxApi(){
 
     VmxApi.prototype.getSelector = function(){
       return this.selector;
+    };
+
+    VmxApi.prototype.params = function(paramName, setVal){
+      var readOnly = null;
+      if (setVal === null) { readOnly = true; }
+      else { readOnly = false; }
+      console.log(this.$selected);
+      return this;
     };
 
 vmxApi = function(selector){

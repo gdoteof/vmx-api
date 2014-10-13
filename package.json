@@ -1,6 +1,6 @@
 {
   "name": "vmx-api",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "vmx api",
   "main": "index.js",
   "scripts": {

@@ -130,7 +130,7 @@ var detectors = {};
     };
 
     VmxApi.prototype.processServerResponse  = function(vars){
-      console.log(vars);
+      //console.log(vars);
       var detections   = vars.detections;
       var detectorParams = vars.detectorParams;
       //NOTE: Detectors should be able to receive have their own name

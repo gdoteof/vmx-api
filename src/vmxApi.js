@@ -134,7 +134,7 @@ var detectors = {};
       var detections   = vars.detections;
       var detectorParams = vars.detectorParams;
       //NOTE: Detectors should be able to receive have their own name
-      var model_name   = vars.name || detections[0].cls;
+      var model_name   = vars.name || detections[0].name;
       var connectionId = vars.connectionId;
       var _detector;
       var now = (new Date()).getTime();

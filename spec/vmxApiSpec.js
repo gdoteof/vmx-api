@@ -42,7 +42,7 @@ describe("vmxApi", function() {
           2: 612.87,
           3: 627.4
         },
-        cls: "hand",
+        name: "hand",
         image: "data:image/jpeg;base64,/9j/4AAQSk",
         score: 1
       }
@@ -56,7 +56,7 @@ describe("vmxApi", function() {
           2: 612.87,
           3: 627.4
         },
-        cls: "face",
+        name: "face",
         image: "data:image/jpeg;base64,/9j/4AAQSk",
         score: 1
       }
@@ -69,7 +69,7 @@ describe("vmxApi", function() {
           2: 612.87,
           3: 627.4
         },
-        cls: "hand",
+        name: "hand",
         image: "data:image/jpeg;base64,/9j/4AAQSk",
         score: -0.994451
       }
@@ -83,7 +83,7 @@ describe("vmxApi", function() {
           2: 612.87,
           3: 627.4
         },
-        cls: "face",
+        name: "face",
         image: "data:image/jpeg;base64,/9j/4AAQSk",
         score: -0.994451
       }

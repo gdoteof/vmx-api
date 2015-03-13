@@ -13,14 +13,20 @@
   "author": "geoff golder",
   "license": "MIT",
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-jshint": "~0.7.0",
-    "grunt-contrib-uglify": "~0.2.5",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt-contrib-jasmine": "~0.5.2",
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "~0.5.1",
+    "grunt-contrib-jshint": "~0.11.0",
+    "grunt-contrib-uglify": "~0.8.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-jasmine": "~0.8.2",
     "yuidocjs": "~0.3.46",
     "grunt-strip-code": "~0.1.2",
-    "grunt-groc": "~0.4.0"
+    "grunt-groc": "~0.4.0",
+    "grunt-karma": "^0.10.1",
+    "karma": "~0.12.0",
+    "karma-coverage": "^0.2.7",
+    "karma-jasmine": "^0.3.5",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-phantomjs-launcher": "^0.1.4"
   }
 }

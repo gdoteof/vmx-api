@@ -133,8 +133,8 @@ describe("vmxApi", function() {
   });
 
   it("should not allow any params to everDetected()", function(){
-    var err = {name:"Too many parameters", message: "This functin takes no params!"};
-    expect(function(){vmxApi('face').everDetected("anything");}).toThrow(err);
+    //var err = {name:"Too many parameters", message: "This functin takes no params!"};
+    expect(function(){vmxApi('face').everDetected("anything");}).toThrow();
   });
 
   it("should not find any detections if nothing's been processed", function(){
@@ -183,6 +183,7 @@ describe("vmxApi", function() {
             .not.toHaveBeenCalled();
     });
     it("should should handle time thresholds correctly", function(){
+
       var toBeSpied = {
         callback                : function(){},
         callback_sanity_checker : function(){}
@@ -190,7 +191,7 @@ describe("vmxApi", function() {
 
       var now = (new Date()).getTime();
       var fakeTime = now;
-      spyOn(Date.prototype,'getTime').andCallFake(function(){
+      spyOn(Date.prototype,'getTime').and.callFake(function(){
         return fakeTime;
       });
 
@@ -206,23 +207,23 @@ describe("vmxApi", function() {
       vmxApi.processServerResponse(hand_params_pos);
       expect(toBeSpied.callback)
             .toHaveBeenCalled();
-      expect(toBeSpied.callback.callCount).toBe(1);
+      expect(toBeSpied.callback.calls.count()).toBe(1);
       
       fakeTime += 1000;
       vmxApi.processServerResponse(hand_params_pos);
-      expect(toBeSpied.callback.callCount).toBe(1);
+      expect(toBeSpied.callback.calls.count()).toBe(1);
       // Lets make a hundred fake positives 1second apart
       for(var y = 0; y<100; ++y){
         fakeTime += 1000;
         vmxApi.processServerResponse(hand_params_pos);
-        expect(toBeSpied.callback.callCount).toBe(1);
+        expect(toBeSpied.callback.calls.count()).toBe(1);
       }
 
       // Lets make a hundred fake positives 10 minutes apart
       for(var x = 2; x<100; ++x){
         fakeTime += 1000 * 60 * 10;
         vmxApi.processServerResponse(hand_params_pos);
-        expect(toBeSpied.callback.callCount).toBe(x);
+        expect(toBeSpied.callback.calls.count()).toBe(x);
       }
       
     });
@@ -230,6 +231,7 @@ describe("vmxApi", function() {
 
   describe("onLeave", function() {
     it("should onLeave function when something leaves", function(){
+
       var toBeSpied = {
         callback  : function(){}
       };
@@ -242,7 +244,7 @@ describe("vmxApi", function() {
 
       var now = (new Date()).getTime();
       var fakeTime = now;
-      spyOn(Date.prototype,'getTime').andCallFake(function(){
+      spyOn(Date.prototype,'getTime').and.callFake(function(){
         return fakeTime;
       });
       

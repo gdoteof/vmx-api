@@ -1,11 +1,13 @@
-/*globals  beforeEach: true*/
+/*globals  beforeEach: true, jasmine: true*/
 beforeEach(function() {
   'use strict';
-  this.addMatchers({
+
+  var customMatchers = {
     toSelectNothing: function() {
       var api = this.actual;
       return  api.selected === {};
     }
+  };
 
-  });
+  jasmine.addMatchers(customMatchers);
 });

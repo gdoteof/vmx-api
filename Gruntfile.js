@@ -47,6 +47,32 @@ module.exports = function(grunt) {
         keepRunner : true
       }
     },
+    karma: {
+      options: {
+        
+        frameworks: ['jasmine'],
+        reporters: ['progress','coverage'],
+        preprocessors: {
+          'src/*.js': ['coverage']
+        },
+        coverageReporter: {
+          type: 'html',
+          dir: 'coverage/'
+        },
+        port: 9876,
+        singleRun: true,
+        colors: true,
+        logLevel: 'DEBUG',
+        browsers: ['Chrome']
+      },
+      
+      unit: {
+        files: {
+          src: ['<%= jasmine.src %>',
+                '<%= jasmine.options.specs %>']
+        }
+      }
+    },
     jshint: {
       options: {
         curly   : true,
@@ -117,9 +143,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-strip-code');
   grunt.loadNpmTasks('grunt-groc');
+  grunt.loadNpmTasks('grunt-karma');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'jasmine', 'concat', 'strip_code', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'jasmine', 'karma', 'concat', 'strip_code', 'uglify']);
   grunt.registerTask('docs', ['groc:pub','groc:local']);
 
 };
